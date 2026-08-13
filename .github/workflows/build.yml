@@ -19,10 +19,27 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential mingw-w64 make cmake
 
-    - name: Compile Project
+    - name: Check Repository Structure & Compile
       run: |
-        # Menggunakan Makefile standar dengan cross-compiler MinGW 32-bit (untuk SA-MP Windows)
-        make CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ AR=i686-w64-mingw32-ar
+        echo "=== Daftar File di Repository ==="
+        ls -la
+        
+        # Cek jika ada CMakeLists.txt
+        if [ -f "CMakeLists.txt" ]; then
+          echo "Ditemukan CMakeLists.txt, melakukan build dengan CMake..."
+          mkdir build && cd build
+          cmake -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ ..
+          make
+        # Cek jika ada file Makefile
+        elif [ -f "Makefile" ] || [ -f "makefile" ]; then
+          echo "Ditemukan Makefile, menjalankan make..."
+          make CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ AR=i686-w64-mingw32-ar
+        else
+          echo "Peringatan: Tidak ditemukan Makefile maupun CMakeLists.txt di root folder."
+          # Cari di subfolder jika ada
+          find . -maxdepth 2 -name "Makefile" -o -name "CMakeLists.txt"
+          exit 1
+        fi
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -31,3 +48,4 @@ jobs:
         path: |
           *.dll
           bin/*.dll
+          build/*.dll
