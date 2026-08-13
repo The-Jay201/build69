@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    # Perbaikan: Mengaktifkan submodule recursive agar folder vendor/RakNet ikut ter-checkout
+    - name: Checkout Repository with Submodules
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Setup Android NDK
       uses: android-actions/setup-android@v3
@@ -20,12 +23,10 @@ jobs:
       run: |
         sdkmanager --install "ndk;17.2.4988734"
 
-    # Solusi tuntas dengan force overwrite symlink
     - name: Fix libtinfo5 missing via Symlink (Force)
       run: |
         sudo apt-get update
         sudo apt-get install -y libtinfo6
-        # Menggunakan -sf untuk menimpa file symlink jika sudah ada
         sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
         sudo ln -sf /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
