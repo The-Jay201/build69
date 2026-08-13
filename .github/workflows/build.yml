@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Perbaikan: Mengaktifkan submodule recursive agar folder vendor/RakNet ikut ter-checkout
-    - name: Checkout Repository with Submodules
+    - name: Checkout Repository
       uses: actions/checkout@v4
       with:
         submodules: recursive
@@ -29,6 +28,16 @@ jobs:
         sudo apt-get install -y libtinfo6
         sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
         sudo ln -sf /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
+
+    # Menangani perbedaan huruf besar/kecil (case-sensitive) pada folder RakNet di Linux
+    - name: Fix RakNet Case Sensitivity in JNI
+      run: |
+        cd jni/vendor
+        if [ -d "raknet" ] && [ ! -d "RakNet" ]; then
+          ln -s raknet RakNet
+          echo "Symlink raknet -> RakNet berhasil dibuat."
+        fi
+        ls -la
 
     # Menjalankan kompilasi terarah langsung ke folder jni bawaan build69
     - name: Build with ndk-build
