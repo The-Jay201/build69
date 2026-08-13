@@ -28,9 +28,12 @@ jobs:
           sed -i 's/gnustl_static/c++_static/g' jni/Application.mk
         fi
         
-        # Jalankan ndk-build
+        # Cetak info NDK yang aktif untuk memastikan versinya benar
+        echo "NDK Home Path: $ANDROID_NDK_HOME"
+        
+        # Jalankan ndk-build secara eksplisit menggunakan path NDK yang terinstall
         cd jni
-        $ANDROID_NDK_HOME/ndk-build
+        "$ANDROID_NDK_HOME/ndk-build"
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
