@@ -21,11 +21,8 @@ jobs:
 
     - name: Compile Project
       run: |
-        # Jika menggunakan Makefile untuk cross-compile ke Windows (32-bit biasanya untuk SA-MP)
-        # Sesuaikan dengan perintah Makefile yang ada di repo tersebut
-        make -f Makefile.win CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++
-        
-        # Atau jika menggunakan perintah manual / script kustom, tulis di sini.
+        # Menggunakan Makefile standar dengan cross-compiler MinGW 32-bit (untuk SA-MP Windows)
+        make CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ AR=i686-w64-mingw32-ar
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -33,4 +30,4 @@ jobs:
         name: samp-cef-plugin
         path: |
           *.dll
-          # Tambahkan path file .dll atau hasil build lainnya jika masuk ke folder tertentu
+          bin/*.dll
