@@ -20,15 +20,14 @@ jobs:
       run: |
         sdkmanager --install "ndk;17.2.4988734"
 
-    # Perbaikan Error libtinfo5 menggunakan tautan unduhan yang valid di repositori Ubuntu
-    - name: Install Missing Legacy Linux Libraries (Fixed)
+    # Solusi tuntas: Membuat symlink libtinfo.so.6 menjadi libtinfo.so.5 untuk NDK lawas
+    - name: Fix libtinfo5 missing via Symlink
       run: |
         sudo apt-get update
-        sudo add-apt-repository universe
-        sudo apt-get update
-        # Mengambil versi paket libtinfo5 yang aktif dari arsip security/universe Ubuntu
-        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
-        sudo apt install -y ./libtinfo5_6.3-2ubuntu0.1_amd64.deb
+        sudo apt-get install -y libtinfo6
+        # Membuat tautan simbolik agar NDK membaca libtinfo6 sebagai libtinfo5
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+        sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
     # Menjalankan kompilasi terarah langsung ke folder jni bawaan build69
     - name: Build with ndk-build
