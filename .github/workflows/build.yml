@@ -20,16 +20,15 @@ jobs:
       run: |
         sdkmanager --install "ndk;17.2.4988734"
 
-    # Perbaikan Error libtinfo5 dengan mengaktifkan universe dan mengambil dari arsip/paket kompatibilitas
+    # Perbaikan Error libtinfo5 menggunakan tautan unduhan yang valid di repositori Ubuntu
     - name: Install Missing Legacy Linux Libraries (Fixed)
       run: |
         sudo apt-get update
         sudo add-apt-repository universe
         sudo apt-get update
-        # Mengunduh dan menginstal libtinfo5 langsung dari arsip Ubuntu untuk mengatasi pembatasan di Ubuntu 24.04
-        wget http://archive.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
-        sudo dpkg -i libtinfo5_6.3-2ubuntu0.1_amd64.deb
-        sudo apt-get install -f -y
+        # Mengambil versi paket libtinfo5 yang aktif dari arsip security/universe Ubuntu
+        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+        sudo apt install -y ./libtinfo5_6.3-2ubuntu0.1_amd64.deb
 
     # Menjalankan kompilasi terarah langsung ke folder jni bawaan build69
     - name: Build with ndk-build
