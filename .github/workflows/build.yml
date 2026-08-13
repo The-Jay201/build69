@@ -1,4 +1,4 @@
-name: Build SA-MP CEF
+name: Build Android NDK Project
 
 on:
   push:
@@ -14,38 +14,21 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install MinGW and Build Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential mingw-w64 make cmake
+    - name: Setup Android NDK
+      uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r21e # Versi NDK yang lebih tua seringkali lebih kompatibel dengan proyek lama
 
-    - name: Check Repository Structure & Compile
+    - name: Compile with ndk-build
       run: |
-        echo "=== Daftar File di Repository ==="
-        ls -la
+        # Masuk ke folder jni karena di sanalah Android.mk berada
+        cd jni
+        # Jalankan ndk-build
+        $ANDROID_NDK_HOME/ndk-build
         
-        # Cek jika ada CMakeLists.txt
-        if [ -f "CMakeLists.txt" ]; then
-          echo "Ditemukan CMakeLists.txt, melakukan build dengan CMake..."
-          mkdir build && cd build
-          cmake -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ ..
-          make
-        # Cek jika ada file Makefile
-        elif [ -f "Makefile" ] || [ -f "makefile" ]; then
-          echo "Ditemukan Makefile, menjalankan make..."
-          make CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ AR=i686-w64-mingw32-ar
-        else
-          echo "Peringatan: Tidak ditemukan Makefile maupun CMakeLists.txt di root folder."
-          # Cari di subfolder jika ada
-          find . -maxdepth 2 -name "Makefile" -o -name "CMakeLists.txt"
-          exit 1
-        fi
-
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: samp-cef-plugin
+        name: output-libraries
         path: |
-          *.dll
-          bin/*.dll
-          build/*.dll
+          libs/**/*.so
