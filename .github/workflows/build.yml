@@ -11,24 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout Repository with Submodules
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Setup Android NDK
-      # Menggunakan versi yang lebih tua agar mendukung gnustl_static
       uses: nttld/setup-ndk@v1
       with:
         ndk-version: r16b 
 
     - name: Prepare and Compile
       run: |
-        # 1. Cari file Application.mk dan ganti gnustl_static ke c++_static agar bisa compile di NDK modern
-        # Jika file ada di jni/Application.mk
+        # Ganti gnustl_static ke c++_static jika file Application.mk ada
         if [ -f "jni/Application.mk" ]; then
           sed -i 's/gnustl_static/c++_static/g' jni/Application.mk
         fi
         
-        # 2. Compile menggunakan ndk-build
+        # Jalankan ndk-build
         cd jni
         $ANDROID_NDK_HOME/ndk-build
         
