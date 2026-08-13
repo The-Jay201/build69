@@ -15,15 +15,21 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup Android NDK
+      # Menggunakan versi yang lebih tua agar mendukung gnustl_static
       uses: nttld/setup-ndk@v1
       with:
-        ndk-version: r21e # Versi NDK yang lebih tua seringkali lebih kompatibel dengan proyek lama
+        ndk-version: r16b 
 
-    - name: Compile with ndk-build
+    - name: Prepare and Compile
       run: |
-        # Masuk ke folder jni karena di sanalah Android.mk berada
+        # 1. Cari file Application.mk dan ganti gnustl_static ke c++_static agar bisa compile di NDK modern
+        # Jika file ada di jni/Application.mk
+        if [ -f "jni/Application.mk" ]; then
+          sed -i 's/gnustl_static/c++_static/g' jni/Application.mk
+        fi
+        
+        # 2. Compile menggunakan ndk-build
         cd jni
-        # Jalankan ndk-build
         $ANDROID_NDK_HOME/ndk-build
         
     - name: Upload Artifact
