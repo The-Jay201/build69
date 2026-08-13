@@ -20,14 +20,14 @@ jobs:
       run: |
         sdkmanager --install "ndk;17.2.4988734"
 
-    # Solusi tuntas: Membuat symlink libtinfo.so.6 menjadi libtinfo.so.5 untuk NDK lawas
-    - name: Fix libtinfo5 missing via Symlink
+    # Solusi tuntas dengan force overwrite symlink
+    - name: Fix libtinfo5 missing via Symlink (Force)
       run: |
         sudo apt-get update
         sudo apt-get install -y libtinfo6
-        # Membuat tautan simbolik agar NDK membaca libtinfo6 sebagai libtinfo5
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
-        sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
+        # Menggunakan -sf untuk menimpa file symlink jika sudah ada
+        sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+        sudo ln -sf /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
     # Menjalankan kompilasi terarah langsung ke folder jni bawaan build69
     - name: Build with ndk-build
