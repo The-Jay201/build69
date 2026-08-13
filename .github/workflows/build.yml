@@ -1,0 +1,36 @@
+name: Build SA-MP CEF
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install MinGW and Build Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential mingw-w64 make cmake
+
+    - name: Compile Project
+      run: |
+        # Jika menggunakan Makefile untuk cross-compile ke Windows (32-bit biasanya untuk SA-MP)
+        # Sesuaikan dengan perintah Makefile yang ada di repo tersebut
+        make -f Makefile.win CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++
+        
+        # Atau jika menggunakan perintah manual / script kustom, tulis di sini.
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: samp-cef-plugin
+        path: |
+          *.dll
+          # Tambahkan path file .dll atau hasil build lainnya jika masuk ke folder tertentu
