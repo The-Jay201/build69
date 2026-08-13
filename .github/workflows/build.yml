@@ -1,43 +1,32 @@
-name: Build Android NDK Project
+name: Build SA-MP Build69 Library (.so)
 
 on:
   push:
-    branches: [ "master", "main" ]
-  pull_request:
-    branches: [ "master", "main" ]
+    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository with Submodules
+    - name: Checkout Repository
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     - name: Setup Android NDK
-      uses: nttld/setup-ndk@v1
-      with:
-        ndk-version: r16b 
+      uses: android-actions/setup-android@v3
 
-    - name: Prepare and Compile
+    - name: Install NDK r16b / r17c (Wajib Versi Lama)
       run: |
-        # Ganti gnustl_static ke c++_static jika file Application.mk ada
-        if [ -f "jni/Application.mk" ]; then
-          sed -i 's/gnustl_static/c++_static/g' jni/Application.mk
-        fi
-        
-        # Cetak info NDK yang aktif untuk memastikan versinya benar
-        echo "NDK Home Path: $ANDROID_NDK_HOME"
-        
-        # Jalankan ndk-build secara eksplisit menggunakan path NDK yang terinstall
-        cd jni
-        "$ANDROID_NDK_HOME/ndk-build"
-        
-    - name: Upload Artifact
+        sdkmanager --install "ndk;17.2.4988734"
+
+    # Compile langsung mengarah ke folder jni bawaan build69
+    - name: Build with ndk-build
+      run: |
+        $ANDROID_HOME/ndk/17.2.4988734/ndk-build -C ./jni NDK_PROJECT_PATH=../
+
+    - name: Upload Compiled .so Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: output-libraries
-        path: |
-          libs/**/*.so
+        name: samp-build69-libs
+        path: libs/
