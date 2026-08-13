@@ -29,13 +29,18 @@ jobs:
         sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
         sudo ln -sf /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 
-    # Menangani perbedaan huruf besar/kecil (case-sensitive) pada folder RakNet di Linux
-    - name: Fix RakNet Case Sensitivity in JNI
+    # Menangani case-sensitivity Linux untuk RakNet dan file header (.h) di folder jni
+    - name: Fix Case Sensitivity Issues
       run: |
-        cd jni/vendor
-        if [ -d "raknet" ] && [ ! -d "RakNet" ]; then
-          ln -s raknet RakNet
-          echo "Symlink raknet -> RakNet berhasil dibuat."
+        cd jni
+        # Fix RakNet folder casing
+        if [ -d "vendor/raknet" ] && [ ! -d "vendor/RakNet" ]; then
+          ln -s raknet vendor/RakNet
+        fi
+        
+        # Fix CheckFileHash.h casing jika file aslinya huruf kecil
+        if [ -f "checkfilehash.h" ] && [ ! -f "CheckFileHash.h" ]; then
+          ln -s checkfilehash.h CheckFileHash.h
         fi
         ls -la
 
