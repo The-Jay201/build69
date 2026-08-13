@@ -16,17 +16,26 @@ jobs:
     - name: Setup Android NDK
       uses: android-actions/setup-android@v3
 
-    - name: Install NDK r16b / r17c (Wajib Versi Lama)
+    - name: Install NDK r17c
       run: |
         sdkmanager --install "ndk;17.2.4988734"
 
-    # Compile langsung mengarah ke folder jni bawaan build69
+    # Perbaikan Error libtinfo.so.5 dengan memasang paket kompatibilitas sistem
+    - name: Install Missing Legacy Linux Libraries (Fixed)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libtinfo5
+
+    # Menjalankan kompilasi terarah langsung ke folder jni bawaan build69
     - name: Build with ndk-build
       run: |
         $ANDROID_HOME/ndk/17.2.4988734/ndk-build -C ./jni NDK_PROJECT_PATH=../
 
+    # Mengambil hasil akhir file .so yang berhasil dibuat
     - name: Upload Compiled .so Artifact
       uses: actions/upload-artifact@v4
       with:
         name: samp-build69-libs
-        path: libs/
+        path: |
+          libs/
+          obj/local/
